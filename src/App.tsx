@@ -10,8 +10,10 @@ import { Menu, Slider, theme } from "antd";
 import { Breadcrumb } from "antd";
 import { Flex, Layout } from "antd";
 import { CrossTransformer } from "./crossTransformer";
-import { TextSearch } from "./textSearch";
-import { DbShow } from "./dbShow";
+import { Deepfake1 } from "./deepfake1";
+import { Deepfake2 } from "./deepfake2";
+
+
 const { Header, Content, Footer, Sider } = Layout;
 const headerStyle: React.CSSProperties = {
   textAlign: "center",
@@ -46,6 +48,23 @@ const footerStyle: React.CSSProperties = {
 const layoutStyle = {
   minHeight: "100vh",
 };
+
+const videos = [
+  {
+    title: "Video 1",
+    description: "This is the first video.",
+    url: "https://www.w3schools.com/html/mov_bbb.mp4",
+    thumbnail: "https://via.placeholder.com/240x135",
+  },
+  {
+    title: "Video 2",
+    description: "This is the second video.",
+    url: "https://www.w3schools.com/html/movie.mp4",
+    thumbnail: "https://via.placeholder.com/240x135",
+  },
+  // Add more videos as needed
+];
+
 type MenuItem = Required<MenuProps>["items"][number];
 const items: MenuItem[] = [
   {
@@ -113,7 +132,7 @@ const App: React.FC = () => {
   } = theme.useToken();
   const [stateOpenKeys, setStateOpenKeys] = useState(["1", "11"]);
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState<string | null>("11");
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const onOpenChange: MenuProps["onOpenChange"] = (openKeys) => {
     const currentOpenKey = openKeys.find(
       (key) => stateOpenKeys.indexOf(key) === -1
@@ -196,14 +215,14 @@ const App: React.FC = () => {
                 borderRadius: borderRadiusLG,
               }}
             >
-              {selectedKey === "11" && <TextSearch />}
-              {selectedKey === "12" && <DbShow />}
+              {selectedKey === "11" && <div>单个文本检索</div>}
+              {selectedKey === "12" && <div>后台数据系统查看</div>}
               {selectedKey === "21" && <CrossTransformer />}
               {selectedKey === "22" && <div>后台数据检测结果查看</div>}
               {selectedKey === "31" && <div>单个视频评论语义分析</div>}
               {selectedKey === "32" && <div>后台视频评论数据查看</div>}
-              {selectedKey === "41" && <div>单个视频检测</div>}
-              {selectedKey === "42" && <div>后台数据检测结果查看</div>}
+              {selectedKey === "41" && <Deepfake1 />}
+              {selectedKey === "42" && <Deepfake2/>}
             </div>
           </Content>
           <Footer
