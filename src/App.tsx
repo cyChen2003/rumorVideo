@@ -8,6 +8,8 @@ import {
 import type { MenuProps } from "antd";
 import { Menu, Slider, theme } from "antd";
 import { Breadcrumb } from "antd";
+import { TextSearch } from "./textSearch";
+import { DbShow } from "./dbShow";
 import { Flex, Layout } from "antd";
 import { CrossTransformer } from "./crossTransformer";
 import { Deepfake1 } from "./deepfake1";
@@ -132,7 +134,7 @@ const App: React.FC = () => {
   } = theme.useToken();
   const [stateOpenKeys, setStateOpenKeys] = useState(["1", "11"]);
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [selectedKey, setSelectedKey] = useState<string | null>("11");
   const onOpenChange: MenuProps["onOpenChange"] = (openKeys) => {
     const currentOpenKey = openKeys.find(
       (key) => stateOpenKeys.indexOf(key) === -1
@@ -215,8 +217,8 @@ const App: React.FC = () => {
                 borderRadius: borderRadiusLG,
               }}
             >
-              {selectedKey === "11" && <div>单个文本检索</div>}
-              {selectedKey === "12" && <div>后台数据系统查看</div>}
+              {selectedKey === "11" && <TextSearch />}
+              {selectedKey === "12" && <DbShow />}
               {selectedKey === "21" && <CrossTransformer />}
               {selectedKey === "22" && <div>后台数据检测结果查看</div>}
               {selectedKey === "31" && <div>单个视频评论语义分析</div>}
