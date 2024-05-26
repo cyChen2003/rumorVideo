@@ -14,7 +14,7 @@ import { Flex, Layout } from "antd";
 import { CrossTransformer } from "./crossTransformer";
 import { Deepfake1 } from "./deepfake1";
 import { Deepfake2 } from "./deepfake2";
-
+import { CommentsAnalysis } from "./CommentsAnalysis";
 
 const { Header, Content, Footer, Sider } = Layout;
 const headerStyle: React.CSSProperties = {
@@ -221,7 +221,7 @@ const App: React.FC = () => {
               {selectedKey === "12" && <DbShow />}
               {selectedKey === "21" && <CrossTransformer />}
               {selectedKey === "22" && <div>后台数据检测结果查看</div>}
-              {selectedKey === "31" && <div>单个视频评论语义分析</div>}
+              {selectedKey === "31" && <CommentsAnalysis />}
               {selectedKey === "32" && <div>后台视频评论数据查看</div>}
               {selectedKey === "41" && <Deepfake1 />}
               {selectedKey === "42" && <Deepfake2/>}
