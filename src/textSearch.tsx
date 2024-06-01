@@ -17,7 +17,7 @@ const { Search } = Input;
 const { Header, Content, Footer, Sider } = Layout;
 const steps = [
   {
-    title: "输入需要检索的文本",
+    title: "输入视频网址",
   },
   {
     title: "获取检索报告",
@@ -146,7 +146,7 @@ export const TextSearch = () => {
                   }}
                 >
                   <Search
-                    placeholder="输入文本进行检索"
+                    placeholder="输入视频url进行检测"
                     onSearch={onSearch}
                     enterButton
                     loading={clickSearch}

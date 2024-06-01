@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, Space } from "antd";
 import type { SearchProps } from "antd/es/input/Search";
-import { Input } from "antd";
+import { Input,Modal,Form,Checkbox } from "antd";
 import ReactDOM from "react-dom";
 import { Pie } from "@ant-design/plots";
 import { Flex, Layout } from "antd";
@@ -10,6 +10,9 @@ import { Col, Row } from "antd";
 import { Divider, List, Typography } from 'antd';
 import { Table } from 'antd';
 import { Tag } from 'antd';
+import type { TableColumnsType, TableProps } from 'antd';
+import { Radio } from 'antd';
+import type { RadioChangeEvent } from 'antd';
 
 const description = "This is a description.";
 const { Search } = Input;
@@ -76,6 +79,9 @@ export const DbShow = () => {
   const [clickSearch, setClickSearch] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [visible, setVisible] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<DataType | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [value, setValue] = useState('已知谣言');
 
   const onSearch: SearchProps["onSearch"] = (value, _e, info) => {
     //变成loading状态
@@ -289,54 +295,69 @@ export const DbShow = () => {
     },
   ];
 
-const columns = [
+
+  interface DataType {
+    key: React.Key;
+    weiboId: string;
+    content: string;
+    imageUrl: string;
+    postTime: string;
+    retweetCount: number;
+    commentCount: number;
+    likeCount: number;
+    reportReason: string;
+  }
+  const columns: TableColumnsType<DataType> = [
   {
     title: '发布者ID',
     dataIndex: 'weiboId',
     key: 'weiboId',
-    width: '23%'
+    width: '13%'
   },
   {
     title: '短视频标题',
     dataIndex: 'content',
     key: 'content',
-    width: '30%'
+    width: '20%'
   },
   {
     title: '短视频url',
     dataIndex: 'imageUrl',
     key: 'imageUrl',
-    width: '30%'
+    width: '21%'
   },
   {
     title: '审核时间',
     dataIndex: 'postTime',
     key: 'postTime',
-    width: '17%'
+    width: '11%',
+    sorter: (a, b) => a.postTime.localeCompare(b.postTime),
   },
   {
     title: '转发数',
     dataIndex: 'retweetCount',
     key: 'retweetCount',
-    width: '9%'
+    width: '8%'
   },
   {
     title: '评论数',
     dataIndex: 'commentCount',
     key: 'commentCount',
-    width: '9%'
+    width: '8%'
   },
   {
     title: '点赞数',
     dataIndex: 'likeCount',
     key: 'likeCount',
-    width: '9%'
+    width: '8%'
   },
   {
     title: '举报原因',
     dataIndex: 'reportReason',
     key: 'reportReason',
-    width: '13%',
+    width: '10%',
+    sorter: (a, b) => a.reportReason.localeCompare(b.reportReason),
+    sortDirections: ['ascend', 'descend', 'ascend'],
     render: (reason:string) => {
       let color = 'red';
       if (reason === '评论语义') {
@@ -355,7 +376,45 @@ const columns = [
       );
     },
   },
+  {
+    title: '操作',
+    key: 'operation',
+    align: 'center' as const,
+    width: '5%',
+    render: (_: any, record: any) => (
+      <Space size="middle">
+        <Button type="link" onClick={() => showModal(record)}>修改</Button>
+      </Space>
+    ),
+  },
 ];
+  const showModal = (record: any) => {
+    setSelectedRow(record);
+    setModalVisible(true);
+    setValue(record.reportReason);
+  };
+  const handleOk = () => {
+    setModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+  };
+  const handleDelete = () => {
+    // 这里处理删除逻辑
+    setModalVisible(false);
+  };
+  const isAnyCheckboxChecked = (): boolean => {
+    // 这里检查复选框状态
+    return false;
+  };
+  const handleChange = (checkedValues: string[]) => {
+    console.log('checkedValues:', checkedValues);
+  };
+  const onChange = (e: RadioChangeEvent) => {
+    console.log('radio checked', e.target.value);
+    setValue(e.target.value);
+  };
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -369,6 +428,43 @@ const columns = [
                 dataSource={data}
                 pagination={{ pageSize: 10 }}
               />
+              <Modal
+                visible={modalVisible}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                footer={[
+                  // <Button key="back" onClick={handleCancel}>
+                  //   返回
+                  // </Button>,
+                  <Button key="submit" type="primary" onClick={handleOk}>
+                    提交修改
+                  </Button>,
+                  <Button
+                    key="link" type="primary" danger onClick={handleDelete}
+                  >
+                    删除该项
+                  </Button>,
+                ]}
+              >
+                
+                  <Flex gap="middle" vertical>
+                    <Card title="视频信息">
+                      <p><strong>短视频标题:</strong> {selectedRow?.content}</p>
+                      <p><strong>审核时间:</strong> {selectedRow?.postTime}</p>
+                      <p><strong>举报原因:</strong> {selectedRow?.reportReason}</p>
+                    </Card>
+                  
+                    <Card title="修改举报原因">
+                    
+                    <Radio.Group onChange={onChange} value={value}>
+                      <Radio value={'已知谣言'} disabled = {selectedRow?.reportReason === '已知谣言'}>已知谣言</Radio>
+                      <Radio value={'多模态检测'} disabled = {selectedRow?.reportReason === '多模态检测'}>多模态检测</Radio>
+                      <Radio value={'深度伪造'} disabled = {selectedRow?.reportReason === '深度伪造'}>深度伪造</Radio>
+                      <Radio value={'评论语义'} disabled = {selectedRow?.reportReason === '评论语义'}>评论语义</Radio>
+                    </Radio.Group>
+                    </Card>
+                    </Flex>
+              </Modal>
             </Col>
           </Row>
         )}
