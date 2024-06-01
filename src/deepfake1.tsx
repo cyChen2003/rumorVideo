@@ -3,86 +3,47 @@ import { Card, Space } from "antd";
 import type { SearchProps } from "antd/es/input/Search";
 import { Input } from "antd";
 import ReactDOM from "react-dom";
-import { Pie } from "@ant-design/plots";
 import { Layout, Button, message, Steps, theme } from "antd";
 import { Col, Row } from "antd";
 
-const description = "This is a description.";
 const { Search } = Input;
 
-const { Header, Content, Footer, Sider } = Layout;
 const steps = [
   {
     title: "输入需要解析的网址",
   },
   {
-    title: "上传解析内容",
-  },
-  {
     title: "获取检测报告",
   },
 ];
-const headerStyle: React.CSSProperties = {
-  textAlign: "center",
-  color: "#fff",
-  height: 64,
-  paddingInline: 48,
-  lineHeight: "64px",
-  backgroundColor: "#4096ff",
-};
 
-const contentStyle: React.CSSProperties = {
-  margin: "0 16px",
-};
-//带参数传输boardStyle
-const boardStyle: React.CSSProperties = {
-  padding: 24,
-  minHeight: 360,
-};
-const siderStyle: React.CSSProperties = {
-  textAlign: "center",
-  lineHeight: "120px",
-  color: "#fff",
-  backgroundColor: "#1677ff",
-};
-const layoutStyle = {
-  minHeight: "100vh",
-};
+interface TestVideoProps {
+  src: string;
+}
 
-const footerStyle: React.CSSProperties = {
-  textAlign: "center",
-  color: "#fff",
-  backgroundColor: "#4096ff",
-};
-const TestPie = () => {
-  const config = {
-    data: [
-      { type: "真", value: 0.87 },
-      { type: "假", value: 0.13 },
-    ],
-    angleField: "value",
-    colorField: "type",
-    paddingRight: 80,
-    label: {
-      text: "value",
-      position: "outside",
-    },
-    legend: {
-      color: {
-        title: false,
-        position: "right",
-        rowPadding: 5,
-      },
-    },
-  };
-  return <Pie {...config} />;
-};
-
-const TestVideo = () => (
-  <video width="100%" height="auto" controls>
-    <source src="pristine.mp4" type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
+const TestVideo: React.FC<TestVideoProps> = ({ src }) => (
+  <div style={{ 
+    position: "relative", 
+    width: "90%", 
+    paddingBottom: "calc(90% / 3 * 4)", // 3:4 aspect ratio
+    height: 0, 
+    backgroundColor: "#ffffff", // background color for white borders
+    overflow: "hidden" 
+  }}>
+    <video style={{ 
+      position: "absolute", 
+      top: "50%", 
+      left: "50%", 
+      width: "100%", 
+      height: "100%", 
+      transform: "translate(-50%, -50%)", 
+      objectFit: "contain", 
+      backgroundColor: "#ffffff" // background color for white borders
+    }} controls>
+      <source src={src} type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
 );
 
 //编写Deepfake1组件
@@ -107,8 +68,11 @@ export const Deepfake1 = () => {
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
   const [isSend, setSendTo] = useState(false);
+
   const next = () => {
-    setCurrent(current + 1);
+    setTimeout(() => {
+      setCurrent(current + 1);
+    }, 2000);
   };
 
   const prev = () => {
@@ -123,10 +87,12 @@ export const Deepfake1 = () => {
       setCurrent(current + 1);
     }, 2000);
   };
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const items = steps.map((item) => ({ key: item.title, title: item.title }));
+
   return (
     <>
       {contextHolder}
@@ -158,7 +124,7 @@ export const Deepfake1 = () => {
                       controls
                       hidden={!visible}
                     >
-                      <source src="pristine.mp4" type="video/mp4" />
+                      <source src="pristine3.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                   </Card>
@@ -170,15 +136,18 @@ export const Deepfake1 = () => {
             </Col>
           </Row>
         )}
-        {current === 1 && (
-          <Button type="primary" onClick={() => sendTo()} loading={isSend}>
-            下一步
-          </Button>
-        )}
         {current === steps.length - 1 && (
-          <Row>
-            <Col span={12} offset={6}>
-              <TestVideo />
+          <Row gutter={16} justify="center" align="middle">
+            <Col span={11}>
+              <TestVideo src="pristine3.mp4" />
+            </Col>
+            <Col span={2} style={{ textAlign: "center" }}>
+              <img src="images/arrow2.png" alt="Arrow Image" style={{ maxWidth: "130%", height: "auto" }} />
+            </Col>
+            <Col span={11}>
+              <TestVideo src="pristine4.mp4" />
+            </Col>
+            <Col span={24} style={{ textAlign: "center", marginTop: 16 }}>
               <Button
                 type="primary"
                 onClick={() => message.success("解析成功，已生成报告！")}
@@ -200,4 +169,3 @@ export const Deepfake1 = () => {
     </>
   );
 };
-
