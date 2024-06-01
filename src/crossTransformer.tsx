@@ -143,16 +143,16 @@ export const CrossTransformer = () => {
                     enterButton
                     loading={clickSearch}
                   />
-                  <Card hoverable>
+                  <Card hoverable hidden={!visible}>
                     <video
                       width="100%"
                       height="auto"
                       controls
-                      hidden={!visible}
+
                     >
                       <source src="your-video-file.mp4" type="video/mp4" />
-                      Your browser does not support the video tag.
                     </video>
+                    三岁女孩被拐!现场监控曝光!
                   </Card>
                   <Button type="primary" onClick={() => next()}>
                     下一步

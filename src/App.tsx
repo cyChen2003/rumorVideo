@@ -8,10 +8,15 @@ import {
 import type { MenuProps } from "antd";
 import { Menu, Slider, theme } from "antd";
 import { Breadcrumb } from "antd";
-import { Flex, Layout } from "antd";
-import { CrossTransformer } from "./crossTransformer";
 import { TextSearch } from "./textSearch";
 import { DbShow } from "./dbShow";
+import { Flex, Layout } from "antd";
+import { CrossTransformer } from "./crossTransformer";
+import { Deepfake1 } from "./deepfake1";
+import { Deepfake2 } from "./deepfake2";
+import { CommentsAnalysis } from "./CommentsAnalysis";
+import { RelationshipGraph } from "./relationship";
+
 const { Header, Content, Footer, Sider } = Layout;
 const headerStyle: React.CSSProperties = {
   textAlign: "center",
@@ -46,6 +51,23 @@ const footerStyle: React.CSSProperties = {
 const layoutStyle = {
   minHeight: "100vh",
 };
+
+const videos = [
+  {
+    title: "Video 1",
+    description: "This is the first video.",
+    url: "https://www.w3schools.com/html/mov_bbb.mp4",
+    thumbnail: "https://via.placeholder.com/240x135",
+  },
+  {
+    title: "Video 2",
+    description: "This is the second video.",
+    url: "https://www.w3schools.com/html/movie.mp4",
+    thumbnail: "https://via.placeholder.com/240x135",
+  },
+  // Add more videos as needed
+];
+
 type MenuItem = Required<MenuProps>["items"][number];
 const items: MenuItem[] = [
   {
@@ -200,10 +222,10 @@ const App: React.FC = () => {
               {selectedKey === "12" && <DbShow />}
               {selectedKey === "21" && <CrossTransformer />}
               {selectedKey === "22" && <div>后台数据检测结果查看</div>}
-              {selectedKey === "31" && <div>单个视频评论语义分析</div>}
+              {selectedKey === "31" && <CommentsAnalysis />}
               {selectedKey === "32" && <div>后台视频评论数据查看</div>}
-              {selectedKey === "41" && <div>单个视频检测</div>}
-              {selectedKey === "42" && <div>后台数据检测结果查看</div>}
+              {selectedKey === "41" && <Deepfake1 />}
+              {selectedKey === "42" && <Deepfake2 />}
             </div>
           </Content>
           <Footer
