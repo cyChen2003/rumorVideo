@@ -7,7 +7,9 @@ import { Pie } from "@ant-design/plots";
 import { Flex, Layout } from "antd";
 import { Button, message, Steps, theme } from "antd";
 import { Col, Row } from "antd";
+import { Table, Tag } from 'antd';
 
+import type { TableColumnsType, TableProps } from 'antd';
 const description = "This is a description.";
 const { Search } = Input;
 
@@ -55,6 +57,56 @@ const footerStyle: React.CSSProperties = {
   color: "#fff",
   backgroundColor: "#4096ff",
 };
+
+interface DataType {
+  key: string;
+  name: string;
+  content: string;
+}
+
+const columns: TableProps<DataType>['columns'] = [
+  {
+    title: '特征',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: '内容',
+    dataIndex: 'content',
+    key: 'content',
+  },
+];
+
+const data: DataType[] = [
+  {
+    key: '1',
+    name: '标题',
+    content: "三岁女孩被拐!现场监控曝光",
+  },
+  {
+    key: '2',
+    name: '作者信息',
+    content: '作者：正能量的瞬间 简介：传递正能量的瞬间 分享平凡中的感动点滴 治愈所有的不开心',
+  },
+  {
+    key: '3',
+    name: '作者粉丝数',
+    content: '5398',
+  },
+  {
+    key: '4',
+    name: '发布时间',
+    content: '2021-08-12',
+  },
+  {
+    key: '5',
+    name: '评论数',
+    content: '1303',
+  },
+
+
+];
+
 const TestPie = () => {
   const config = {
     data: [
@@ -116,6 +168,7 @@ export const CrossTransformer = () => {
       setCurrent(current + 1);
     }, 2000);
   };
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -163,9 +216,18 @@ export const CrossTransformer = () => {
           </Row>
         )}
         {current === 1 && (
+            <Row>
+              <Col span={12} offset={6}>
+            <Table columns={columns} dataSource={data} pagination={false}/>
+                <div style={{ marginBottom: 20 }}></div>
           <Button type="primary" onClick={() => sendTo()} loading={isSend}>
             下一步
           </Button>
+                <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
+                  上一步
+                </Button>
+              </Col>
+            </Row>
         )}
         {current === steps.length - 1 && (
           <Row>
@@ -182,11 +244,6 @@ export const CrossTransformer = () => {
               </Button>
             </Col>
           </Row>
-        )}
-        {current > 0 && current < steps.length-1 && (
-          <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
-            上一步
-          </Button>
         )}
       </div>
     </>
