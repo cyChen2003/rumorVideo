@@ -4,6 +4,7 @@ import {
   SearchOutlined,
   StepForwardOutlined,
   CommentOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Menu, Slider, theme } from "antd";
@@ -71,6 +72,12 @@ const videos = [
 type MenuItem = Required<MenuProps>["items"][number];
 const items: MenuItem[] = [
   {
+    key:"00",
+    icon:<HomeOutlined/>,
+    label:"系统总览",
+
+  },
+  {
     key: "1",
     icon: <SearchOutlined />,
     label: "数据库检索",
@@ -133,9 +140,9 @@ const App: React.FC = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [stateOpenKeys, setStateOpenKeys] = useState(["1", "11"]);
+  const [stateOpenKeys, setStateOpenKeys] = useState(["0", "00"]);
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState<string | null>("11");
+  const [selectedKey, setSelectedKey] = useState<string | null>("0");
   const onOpenChange: MenuProps["onOpenChange"] = (openKeys) => {
     const currentOpenKey = openKeys.find(
       (key) => stateOpenKeys.indexOf(key) === -1
@@ -173,7 +180,7 @@ const App: React.FC = () => {
           <Menu
             mode="inline"
             theme="dark"
-            defaultSelectedKeys={["11"]}
+            defaultSelectedKeys={["00"]}
             onSelect={({ selectedKeys }) => setSelectedKey(selectedKeys[0])}
             openKeys={stateOpenKeys}
             onOpenChange={onOpenChange}
