@@ -230,7 +230,7 @@ const App: React.FC = () => {
               {selectedKey === "21" && <CrossTransformer />}
               {selectedKey === "22" && <div>后台数据检测结果查看</div>}
               {selectedKey === "31" && <CommentsAnalysis />}
-              {selectedKey === "32" && <div>后台视频评论数据查看</div>}
+              {selectedKey === "32" && <CommentDataViewer />} 
               {selectedKey === "41" && <Deepfake1 />}
               {selectedKey === "42" && <Deepfake2 />}
             </div>
