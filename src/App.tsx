@@ -17,7 +17,7 @@ import { Deepfake1 } from "./deepfake1";
 import { Deepfake2 } from "./deepfake2";
 import { CommentsAnalysis } from "./CommentsAnalysis";
 import { RelationshipGraph } from "./relationship";
-
+import { SystemShow } from "./SystemShow";
 
 const { Header, Content, Footer, Sider } = Layout;
 const headerStyle: React.CSSProperties = {
@@ -230,7 +230,7 @@ const App: React.FC = () => {
                 borderRadius: borderRadiusLG,
               }}
             >
-              {selectedKey === "01" && <RelationshipGraph />}
+              {selectedKey === "01" && <SystemShow />}
               {selectedKey === "02" && <DbShow />}
               {selectedKey === "11" && <TextSearch />}
               {selectedKey === "12" && <DbShow />}
