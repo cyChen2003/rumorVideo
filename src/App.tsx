@@ -16,6 +16,7 @@ import { CrossTransformer } from "./crossTransformer";
 import { Deepfake1 } from "./deepfake1";
 import { Deepfake2 } from "./deepfake2";
 import { CommentsAnalysis } from "./CommentsAnalysis";
+import { CommentDataViewer } from "./CommentsDataViewer";
 import { RelationshipGraph } from "./relationship";
 
 const { Header, Content, Footer, Sider } = Layout;
