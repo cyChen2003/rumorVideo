@@ -162,7 +162,7 @@ export const RelationshipGraph: React.FC = () => {
         ]
       };
 
-      myChart.setOption(option);
+      myChart.setOption(option as any);
     }, 1000); // 模拟加载延迟
 
     // 在组件卸载时清理图表

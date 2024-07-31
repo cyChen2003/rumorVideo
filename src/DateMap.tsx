@@ -91,11 +91,13 @@ export const EChartsCalendarComponent: React.FC = () => {
                 ]
             };
 
-            option && myChart.setOption(option);
+
+            option && myChart.setOption(option as any);
+
         }
     }, []);
 
-    return <div ref={chartRef} style={{ width: '100%'}} />;
+    return <div ref={chartRef} style={{ width: '100%', height: '600px' }} />;
 };
 
 export default EChartsCalendarComponent;

@@ -92,7 +92,7 @@ export const TrafficChart: React.FC<TrafficChartProps> = () => {
       ]
     };
 
-    chart.setOption(option);
+    chart.setOption(option as any);
 
     return () => {
       chart.dispose();

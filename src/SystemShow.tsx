@@ -13,7 +13,7 @@ import { RelationshipGraph } from "./relationship";
 import { EChartsCalendarComponent } from "./DateMap";
 import type { TableColumnsType, TableProps } from 'antd';
 import './App.css';
-
+import { TrafficChart } from "./trafficchart";
 //从DataMap.tsx中import
 export const SystemShow: React.FC = () => {
 
@@ -35,7 +35,7 @@ export const SystemShow: React.FC = () => {
             <Row>
                 <Col span={24}>
                     <Card title="系统展示">
-                        <RelationshipGraph />
+                        <TrafficChart />
                     </Card>
                 </Col>
             </Row>
