@@ -19,6 +19,7 @@ import { CommentsAnalysis } from "./CommentsAnalysis";
 import { CommentDataViewer } from "./CommentsDataViewer";
 import { RelationshipGraph } from "./relationship";
 import { SystemShow } from "./SystemShow";
+import { ModalDatabase} from "./ModalDatabase";
 
 const { Header, Content, Footer, Sider } = Layout;
 const headerStyle: React.CSSProperties = {
@@ -236,7 +237,7 @@ const App: React.FC = () => {
               {selectedKey === "11" && <TextSearch />}
               {selectedKey === "12" && <DbShow />}
               {selectedKey === "21" && <CrossTransformer />}
-              {selectedKey === "22" && <div>后台数据检测结果查看</div>}
+              {selectedKey === "22" && <ModalDatabase />}
               {selectedKey === "31" && <CommentsAnalysis />}
               {selectedKey === "32" && <CommentDataViewer />} 
               {selectedKey === "41" && <Deepfake1 />}
