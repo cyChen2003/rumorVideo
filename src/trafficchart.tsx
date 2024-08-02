@@ -5,13 +5,13 @@ interface TrafficChartProps {}
 
 export const TrafficChart: React.FC<TrafficChartProps> = () => {
   useEffect(() => {
-    const base = +new Date(2024, 2, 3); // 2024年3月3日
+    const base = +new Date(2024, 7, 1); // 2024年8月1日
     const oneHour = 3600 * 1000;
     const date = [];
     const data = [];
-    const today = new Date();
+    const today = new Date(2024,7,4);// 2024年8月4日
     const hours = Math.ceil((today.getTime() - base) / oneHour);
-    let initialValue = Math.round(Math.random() * 500);
+    let initialValue = Math.round(Math.random() * 80);
     data.push(initialValue);
 
     for (let i = 1; i <= hours; i++) {
