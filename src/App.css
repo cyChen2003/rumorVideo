@@ -23,7 +23,9 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
-
+.text-center .ant-card-head-title {
+  text-align: center;
+}
 .App-link {
   color: #61dafb;
 }
@@ -35,4 +37,7 @@
   to {
     transform: rotate(360deg);
   }
+}
+.content-cls {
+  white-space: pre-wrap; /* 保留空白符序列，但是正常换行 */
 }

@@ -18,6 +18,8 @@ import { Deepfake2 } from "./deepfake2";
 import { CommentsAnalysis } from "./CommentsAnalysis";
 import { CommentDataViewer } from "./CommentsDataViewer";
 import { RelationshipGraph } from "./relationship";
+import { SystemShow } from "./SystemShow";
+import { ModalDatabase} from "./ModalDatabase";
 
 const { Header, Content, Footer, Sider } = Layout;
 const headerStyle: React.CSSProperties = {
@@ -73,9 +75,13 @@ const videos = [
 type MenuItem = Required<MenuProps>["items"][number];
 const items: MenuItem[] = [
   {
-    key:"00",
+    key:"0",
     icon:<HomeOutlined/>,
     label:"系统总览",
+    children: [
+      { key: "01", label: "关系总览" },
+      { key: "02", label: "后台数据系统查看" },
+    ]
 
   },
   {
@@ -141,9 +147,9 @@ const App: React.FC = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [stateOpenKeys, setStateOpenKeys] = useState(["0", "00"]);
+  const [stateOpenKeys, setStateOpenKeys] = useState(["0", "01"]);
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState<string | null>("0");
+  const [selectedKey, setSelectedKey] = useState<string | null>("01");
   const onOpenChange: MenuProps["onOpenChange"] = (openKeys) => {
     const currentOpenKey = openKeys.find(
       (key) => stateOpenKeys.indexOf(key) === -1
@@ -181,7 +187,7 @@ const App: React.FC = () => {
           <Menu
             mode="inline"
             theme="dark"
-            defaultSelectedKeys={["00"]}
+            defaultSelectedKeys={["01"]}
             onSelect={({ selectedKeys }) => setSelectedKey(selectedKeys[0])}
             openKeys={stateOpenKeys}
             onOpenChange={onOpenChange}
@@ -226,10 +232,12 @@ const App: React.FC = () => {
                 borderRadius: borderRadiusLG,
               }}
             >
+              {selectedKey === "01" && <SystemShow />}
+              {selectedKey === "02" && <DbShow />}
               {selectedKey === "11" && <TextSearch />}
               {selectedKey === "12" && <DbShow />}
               {selectedKey === "21" && <CrossTransformer />}
-              {selectedKey === "22" && <div>后台数据检测结果查看</div>}
+              {selectedKey === "22" && <ModalDatabase />}
               {selectedKey === "31" && <CommentsAnalysis />}
               {selectedKey === "32" && <CommentDataViewer />} 
               {selectedKey === "41" && <Deepfake1 />}

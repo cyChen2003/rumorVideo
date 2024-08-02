@@ -46,7 +46,7 @@ const commentsData: Comment[] = [
   { id: 23, content: '被黑洞吃了', date: '2023-01-23', article: '要不要主动和外星人接触？霍金曾经警告过人类', emotion: '惊讶', likes: 0, 'rumor':'是' },
   { id: 24, content: '灭霸把他们征服了', date: '2023-01-24', article: '要不要主动和外星人接触？霍金曾经警告过人类', emotion: '厌恶', likes: 0, 'rumor':'是' },
   { id: 25, content: '宇宙尘埃挡住了吧这种事我记得以前也有过好几次', date: '2023-01-25', article: '要不要主动和外星人接触？霍金曾经警告过人类', emotion: '信任', likes: 1, 'rumor':'是' },
-  { id: 26, content: '宇宙这么大，我连一间房子都空间都没有', date: '2023-02-01', article: '近半个世纪以来，至少上百颗恒星离奇消失！到底是何原因？', emotion: '悲伤', likes: 1744, 'rumor':'是' }
+  { id: 26, content: '宇宙这么大，我连一间房子都空间都没有', date: '2023-02-01', article: '近半个世纪以来，至少上百颗恒星离奇消失！到底是何原因？', emotion: '悲伤', likes: 1744, 'rumor':'否' }
 ]
 export const CommentDataViewer: React.FC = () => {
   const [filteredData, setFilteredData] = useState<Comment[]>(commentsData);
@@ -68,9 +68,9 @@ export const CommentDataViewer: React.FC = () => {
     }
 
     if (sentimentFilter) {
-      data = data.filter(comment => comment.emotion === sentimentFilter);
+      data = data.filter(comment => comment.rumor === (sentimentFilter === '虚假' ? '是' : '否'));
     }
-
+  
     setFilteredData(data);
   };
 
@@ -80,14 +80,34 @@ export const CommentDataViewer: React.FC = () => {
       title: '时间',
       dataIndex: 'date',
       key: 'date',
+      width: 120,
       sorter: (a: Comment, b: Comment) => dayjs(a.date).unix() - dayjs(b.date).unix()
     },
-    { title: '所属文章', dataIndex: 'article', key: 'article' },
-    { title: '情感分析', dataIndex: 'emotion', key: 'emotion' },
-    { title: '点赞数', dataIndex: 'likes', key: 'likes', sorter: (a: Comment, b: Comment) => a.likes - b.likes },
-    { title: '谣言', dataIndex: 'rumor', key: 'rumor'}
+    { title: '所属文章', width: 200, dataIndex: 'article', key: 'article' },
+    {
+      title: '情感分析',
+      width: 120,
+      dataIndex: 'emotion',
+      key: 'emotion',
+      render: (text: string) => (
+        <Tag color={
+          text === '愤怒' ? '#D32F2F' :
+          text === '恐惧' ? '#303F9F' :
+          text === '期待' ? '#FFA726' :
+          text === '信任' ? '#29B6F6' :
+          text === '惊讶' ? '#FFEB3B' :
+          text === '悲伤' ? '#1976D2' :
+          text === '快乐' ? '#EC407A' : '#388E3C'
+        }>
+          {text}
+        </Tag>
+      )
+    },
+  
+    { title: '点赞数', width: 100, dataIndex: 'likes', key: 'likes', render: (text:any) => <Badge count={text} showZero overflowCount={999} style={{ backgroundColor: '#52c41a' }} /> },
+    { title: '谣言', dataIndex: 'rumor', key: 'rumor' }
   ];
-
+  
   return (
     <Card hoverable title="评论数据查看" bordered={true} style={{ borderRadius: 10, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
       <Row gutter={[16, 16]}>
