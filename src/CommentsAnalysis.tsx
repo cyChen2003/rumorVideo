@@ -193,7 +193,7 @@ const CommentTable = () => {
       title: '点赞数',
       dataIndex: 'likes',
       key: 'likes',
-      render: (text:any) => <Badge count={text} overflowCount={999} style={{ backgroundColor: '#52c41a' }} />,
+      render: (text:any) => <Badge count={text}  showZero overflowCount={999} style={{ backgroundColor: '#52c41a' }} />,
     },
     {
       title: '情感分类',
