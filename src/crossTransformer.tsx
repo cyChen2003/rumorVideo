@@ -3,6 +3,8 @@ import { Card, Space } from "antd";
 import type { SearchProps } from "antd/es/input/Search";
 import { Input } from "antd";
 import ReactDOM from "react-dom";
+// import fetch from "isomorphic-fetch";
+import axios from "axios";
 import { Pie } from "@ant-design/plots";
 import { Flex, Layout } from "antd";
 import { Button, message, Steps, theme } from "antd";
@@ -106,13 +108,14 @@ const data: DataType[] = [
 
 
 ];
+interface PieDataType {
+  type: string;
+  value: number;
+}
 
-const TestPie = () => {
+const TestPie = ({ pieData }: { pieData: PieDataType[] }) => {
   const config = {
-    data: [
-      { type: "真", value: 0.87 },
-      { type: "假", value: 0.13 },
-    ],
+    data: pieData,
     angleField: "value",
     colorField: "type",
     paddingRight: 80,
@@ -132,14 +135,69 @@ const TestPie = () => {
 };
 //编写CrossTransformer组件
 export const CrossTransformer = () => {
+  const [pieData, setPieData] = useState([
+    { type: "真", value: 0.875 },
+    { type: "假", value: 0.125 },
+  ]);
   const [clickSearch, setClickSearch] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [visible, setVisible] = useState(false);
-
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) => {
+  const [apiData, setApiData] = useState(null);
+  const [apiVideoInfo, setApiVideoInfo] = useState(data);
+  const [urlData,setUrl] = useState("");
+  const onSearch: SearchProps["onSearch"] = async (value, _e, info) => {
     //变成loading状态
+    setUrl(value);
     console.log(info?.source, value);
     setClickSearch(true);
+    try {
+        const response = await axios.post(
+            'http://1.92.98.204:5000/crawler',
+            { url: value }, // 正确的请求体
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.data;
+      const tempdata = [
+        {
+          key: '1',
+          name: '标题',
+          content: data["info_data"]["video_desc"],
+        },
+        {
+          key: '2',
+          name: '作者信息',
+          content: "作者:"+data["info_data"]["author_info"]["author_name"]+" 简介:"+data["info_data"]["author_info"]["signature"],
+      },
+      {
+        key: '3',
+            name: '作者粉丝数',
+          content: data["info_data"]["author_info"]["total_favorited"],
+      },
+      {
+        key: '4',
+            name: '视频ID',
+          content: data["info_data"]["aweme_id"],
+      },
+      {
+        key: '5',
+            name: '最火评论',
+          content: data["info_data"]["comments"][0][0],
+      },
+    ];
+      setApiData(data);
+      setApiVideoInfo(tempdata);
+      console.log(data);
+    } catch (error) {
+      messageApi.error(`请求失败：${error}`);
+    }
     setTimeout(() => {
       setVisible(true);
       setClickSearch(false);
@@ -148,10 +206,12 @@ export const CrossTransformer = () => {
       type: "success",
       content: "搜索成功",
     });
+
   };
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
   const [isSend, setSendTo] = useState(false);
+  const [multiData, setMultiData] = useState(null);
   const next = () => {
     setCurrent(current + 1);
   };
@@ -160,13 +220,30 @@ export const CrossTransformer = () => {
     setCurrent(current - 1);
   };
 
-  const sendTo = () => {
+  const sendTo = async () => {
     setSendTo(true);
-    setTimeout(() => {
-      message.success("解析成功，已生成报告！");
-      setSendTo(false);
-      setCurrent(current + 1);
-    }, 2000);
+    try {
+      const response = await axios.post("http://1.92.98.204:5000/Multimodal_rumor_detection", {
+        url: urlData,
+      });
+      console.log(response);
+      const data = await response.data;
+      setMultiData(data);
+      const pieData = [
+          { type: "真", value: data["real_probability"] },
+          { type: "假", value: data["fake_probability"] },
+      ];
+      setPieData(pieData);
+      console.log(data);
+    } catch (error) {
+      messageApi.error(`请求失败：${error}`);
+    }
+
+
+    message.success("解析成功，已生成报告！");
+    setSendTo(false);
+    setCurrent(current + 1);
+
   };
 
   const {
@@ -205,7 +282,7 @@ export const CrossTransformer = () => {
                     >
                       <source src="your-video-file.mp4" type="video/mp4" />
                     </video>
-                    三岁女孩被拐!现场监控曝光!
+                    {apiData && apiData["info_data"]["video_desc"] ? apiData["info_data"]["video_desc"] : "三岁女孩被拐!现场监控曝光!"}
                   </Card>
                   <Button type="primary" onClick={() => next()}>
                     下一步
@@ -218,7 +295,7 @@ export const CrossTransformer = () => {
         {current === 1 && (
             <Row>
               <Col span={12} offset={6}>
-            <Table columns={columns} dataSource={data} pagination={false}/>
+            <Table columns={columns} dataSource={apiVideoInfo} pagination={false}/>
                 <div style={{ marginBottom: 20 }}></div>
           <Button type="primary" onClick={() => sendTo()} loading={isSend}>
             下一步
@@ -232,7 +309,7 @@ export const CrossTransformer = () => {
         {current === steps.length - 1 && (
           <Row>
             <Col span={12} offset={6}>
-              <TestPie />
+              <TestPie pieData={pieData}/>
               <Button
                 type="primary"
                 onClick={() => message.success("解析成功，已生成报告！")}
