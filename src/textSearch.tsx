@@ -10,6 +10,7 @@ import { Col, Row } from "antd";
 import { Divider, List, Typography } from "antd";
 import { TrafficChart } from "./trafficchart";
 import { Form, Radio } from "antd";
+import axios from "axios";
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
 
@@ -108,6 +109,14 @@ export const TextSearch = () => {
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
   const [isSend, setSendTo] = useState(false);
+  const [data,setData] = useState([
+    "天津塘沽发生大爆炸事故，引发伤亡人员报道，希望伤亡人数不再增加，消防战士平安归来，追责事故真相。向消防英雄致敬。",
+    "天津塘沽发生大爆炸事件，官方报道死亡人数为50+,网友质疑公关处理和对消防战士亡魂的尊重。",
+    "天津塘沽发生大爆炸，普通群众死亡482人，重症监护室52人没有脱离生命危险，消防大队死亡11个中队400多人，官方初报死亡人数为12名消防官兵，但网传总计死亡人数1300多人，爆炸面积方圆一公里，最近的一个居民小区全部被灭。",
+    "截止目前为止，天津塘沽发生大爆炸，普通群众死亡482人，重症监护室52人没有脱离生命危险，消防大队死亡11个中队400多人，两次爆炸全部阵亡，总计死亡人数1300多人。",
+    "天津塘沽发生大爆炸，死伤人数不准确，建议查看朋友圈信息。",
+  ]);
+  const [analysis,setAnalysis] = useState("分析：\n查询内容中的关键信息是“天津塘沽大爆炸”、“消防官兵牺牲”以及对真相的需求。表达了对事件真实情况的关注，特别是对消防官兵牺牲情况的不满和对信息公开的呼吁。\n\n待选内容中：\n1. 提到了天津塘沽大爆炸、伤亡人员、向消防英雄致敬，与查询内容中事件及对消防官兵的关切相符。\n2. 涉及天津塘沽爆炸事件、官方报道与网友质疑，提到了对消防战士的尊重，与查询内容中对真相追求的意图相呼应。\n3. 给出了详细的伤亡数据，包括消防大队的损失，直接关联到查询内容中对消防官兵牺牲的提及。\n4. 同样提供了具体的伤亡数字，强调了消防官兵的重大损失，与查询内容中对牺牲情况的关注一致。\n5. 虽然提到天津塘沽大爆炸和死伤人数不准确，但更多是建议查看朋友圈信息，与查询内容中对公开真相的诉求有部分关联，但不如其他选项直接。\n\n结论：\n查询内容与所有待选内容都紧密相关，因为它们共同关注了天津塘沽大爆炸这一事件，特别是对消防官兵牺牲的关注和对真相的寻求。如果必须选择一个最相关的，可能是第3项，因为它提供了详细的伤亡数据，直接回应了查询内容中对消防官兵明确牺牲情况的关注。因此，结论为3。");
   const next = () => {
     setCurrent(current + 1);
   };
@@ -116,23 +125,37 @@ export const TextSearch = () => {
     setCurrent(current - 1);
   };
 
-  const sendTo = () => {
+  const sendTo = async () => {
     setSendTo(true);
+    const inputContent = form.getFieldValue("inputContent");
+    const payload = inputType === 'URL' ? { "content": inputContent,"type":"url" } : { "content": inputContent,"type":"text" };
+    console.log(payload);
+    try{
+      const response = await axios.post(
+        'http://1.92.98.204:5000/KnownRumorDetection',
+        payload,
+        {
+          headers: {
+              'Content-Type': 'application/json',
+          },
+        }
+      );
+      if(response.status !== 200){
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.data;
+      setAnalysis(data["analysis"]);
+      setData(data["optionList"]);
+    } catch (error) {
+      console.error(error);
+    }
     setTimeout(() => {
       message.success("解析成功，已生成报告！");
       setSendTo(false);
       setCurrent(current + 1);
-    }, 2000);
+    }, 200);
   };
-  const data = [
-    "天津塘沽发生大爆炸事故，引发伤亡人员报道，希望伤亡人数不再增加，消防战士平安归来，追责事故真相。向消防英雄致敬。",
-    "天津塘沽发生大爆炸事件，官方报道死亡人数为50+,网友质疑公关处理和对消防战士亡魂的尊重。",
-    "天津塘沽发生大爆炸，普通群众死亡482人，重症监护室52人没有脱离生命危险，消防大队死亡11个中队400多人，官方初报死亡人数为12名消防官兵，但网传总计死亡人数1300多人，爆炸面积方圆一公里，最近的一个居民小区全部被灭。",
-    "截止目前为止，天津塘沽发生大爆炸，普通群众死亡482人，重症监护室52人没有脱离生命危险，消防大队死亡11个中队400多人，两次爆炸全部阵亡，总计死亡人数1300多人。",
-    "天津塘沽发生大爆炸，死伤人数不准确，建议查看朋友圈信息。",
-  ];
-  const analysis =
-    "分析：\n查询内容中的关键信息是“天津塘沽大爆炸”、“消防官兵牺牲”以及对真相的需求。表达了对事件真实情况的关注，特别是对消防官兵牺牲情况的不满和对信息公开的呼吁。\n\n待选内容中：\n1. 提到了天津塘沽大爆炸、伤亡人员、向消防英雄致敬，与查询内容中事件及对消防官兵的关切相符。\n2. 涉及天津塘沽爆炸事件、官方报道与网友质疑，提到了对消防战士的尊重，与查询内容中对真相追求的意图相呼应。\n3. 给出了详细的伤亡数据，包括消防大队的损失，直接关联到查询内容中对消防官兵牺牲的提及。\n4. 同样提供了具体的伤亡数字，强调了消防官兵的重大损失，与查询内容中对牺牲情况的关注一致。\n5. 虽然提到天津塘沽大爆炸和死伤人数不准确，但更多是建议查看朋友圈信息，与查询内容中对公开真相的诉求有部分关联，但不如其他选项直接。\n\n结论：\n查询内容与所有待选内容都紧密相关，因为它们共同关注了天津塘沽大爆炸这一事件，特别是对消防官兵牺牲的关注和对真相的寻求。如果必须选择一个最相关的，可能是第3项，因为它提供了详细的伤亡数据，直接回应了查询内容中对消防官兵明确牺牲情况的关注。因此，结论为3。";
+  
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -164,7 +187,7 @@ export const TextSearch = () => {
                         <Radio.Button value="TEXT">文本</Radio.Button>
                       </Radio.Group>
                     </Form.Item>
-                    <Form.Item label= {inputType === "URL" ? "URL输入" : "文本输入"}>
+                    <Form.Item name= "inputContent" label= {inputType === "URL" ? "URL输入" : "文本输入"}>
                       <Input
                         placeholder={
                           inputType === "URL" ? "请输入URL" : "请输入文本"
@@ -236,9 +259,9 @@ export const TextSearch = () => {
             </Button>
             <Button
               type="primary"
-              onClick={() => message.success("解析成功，已生成报告！")}
+              onClick={() => prev()}
             >
-              Done
+              完成
             </Button>
           </Space>
         )}
