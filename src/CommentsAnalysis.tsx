@@ -310,7 +310,7 @@ export const CommentsAnalysis = () => {
   const [newsTitle, setNewsTitle] = useState("");
   const [polarityScore, setPolarityScore] = useState(0);
   const [isFakeNews, setIsFakeNews] = useState(false);
-  const [video_id, setVideoId] = useState('');
+  const [videoid, setVideoId] = useState('');
   
   const onSearch: SearchProps["onSearch"] = async (value, _e, info) => {
     setClickSearch(true);
@@ -337,7 +337,7 @@ export const CommentsAnalysis = () => {
       setNewsTitle(data.newsTitle);
       setPolarityScore(data.polarityScore);
       setIsFakeNews(data.isFakeNews);
-      setVideoId(data.video_id);
+      setVideoId(data.videoid);
         // 处理视频ID和更新视频源
 
     } catch (error) {
@@ -373,17 +373,16 @@ export const CommentsAnalysis = () => {
                     enterButton
                     loading={clickSearch}
                   />
-                  <Card hoverable>
                     <video
                       width="100%"
                       height="auto"
                       controls
                       hidden={!visible}
                     >
-                      <source src={"http://1.92.98.204:5000/download/"+video_id+".mp4"} type="video/mp4" />
+                      <source src={`http://1.92.98.204:5000/download/${videoid}`} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
-                  </Card>
+
                   <Button type="primary" onClick={() => next()}>
                     下一步
                   </Button>
