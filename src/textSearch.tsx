@@ -11,8 +11,8 @@ import { Divider, List, Typography } from "antd";
 import { TrafficChart } from "./trafficchart";
 import { Form, Radio } from "antd";
 import axios from "axios";
-import { Descriptions } from 'antd';
-import type { DescriptionsProps } from 'antd';
+import { Descriptions } from "antd";
+import type { DescriptionsProps } from "antd";
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
 
@@ -122,32 +122,57 @@ export const TextSearch = () => {
     "分析：\n查询内容中的关键信息是“天津塘沽大爆炸”、“消防官兵牺牲”以及对真相的需求。表达了对事件真实情况的关注，特别是对消防官兵牺牲情况的不满和对信息公开的呼吁。\n\n待选内容中：\n1. 提到了天津塘沽大爆炸、伤亡人员、向消防英雄致敬，与查询内容中事件及对消防官兵的关切相符。\n2. 涉及天津塘沽爆炸事件、官方报道与网友质疑，提到了对消防战士的尊重，与查询内容中对真相追求的意图相呼应。\n3. 给出了详细的伤亡数据，包括消防大队的损失，直接关联到查询内容中对消防官兵牺牲的提及。\n4. 同样提供了具体的伤亡数字，强调了消防官兵的重大损失，与查询内容中对牺牲情况的关注一致。\n5. 虽然提到天津塘沽大爆炸和死伤人数不准确，但更多是建议查看朋友圈信息，与查询内容中对公开真相的诉求有部分关联，但不如其他选项直接。\n\n结论：\n查询内容与所有待选内容都紧密相关，因为它们共同关注了天津塘沽大爆炸这一事件，特别是对消防官兵牺牲的关注和对真相的寻求。如果必须选择一个最相关的，可能是第3项，因为它提供了详细的伤亡数据，直接回应了查询内容中对消防官兵明确牺牲情况的关注。因此，结论为3。"
   );
   const [overallAnalysis, setOverallAnalysis] = useState("害害害");
-  const [desItem,setDesItem]  = useState([
+  const [desItem, setDesItem] = useState([
     {
-      key: '1',
-      label: <b>搜索内容</b>,
-      children: '天津塘沽大爆炸消防官兵牺牲！',
+      key: "1",
+      label: (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: "bold",
+            color: "#333",
+            fontSize: "15px",
+          }}
+        >
+          <b>搜索内容</b>
+        </div>
+      ),
+      children: "天津塘沽大爆炸消防官兵牺牲！",
     },
     {
-      key: '2',
-      label: '最高得分',
-      children: '1810000000',
+      key: "2",
+      label: (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: "bold",
+            color: "#333",
+            fontSize: "15px",
+          }}
+        >
+          <b>已知谣言相似度得分</b>
+        </div>
+      ),
+      children: "0.94",
     },
     {
-      key: '3',
-      label: 'Live',
-      children: 'Hangzhou, Zhejiang',
-    },
-    {
-      key: '4',
-      label: 'Address',
-      span: 2,
-      children: 'No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China',
-    },
-    {
-      key: '5',
-      label: 'Remark',
-      children: 'empty',
+      key: "3",
+      label: (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: "bold",
+            color: "#333",
+            fontSize: "15px",
+          }}
+        >
+          <b>结论</b>
+        </div>
+      ),
+      children: "谣言",
     },
   ]);
   const next = () => {
@@ -161,6 +186,11 @@ export const TextSearch = () => {
   const sendTo = async () => {
     setSendTo(true);
     const inputContent = form.getFieldValue("inputContent");
+    if (!inputContent) {
+      message.error("请输入内容！");
+      setSendTo(false);
+      return;
+    }
     const payload =
       inputType === "URL"
         ? { content: inputContent, type: "url" }
@@ -180,6 +210,60 @@ export const TextSearch = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.data;
+      const updatedDesItem = [
+        {
+          key: "1",
+          label: (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                fontWeight: "bold",
+                color: "#333",
+                fontSize: "15px",
+              }}
+            >
+              <b>搜索内容</b>
+            </div>
+          ),
+          children: data["targettext"],
+        },
+        {
+          key: "2",
+          label: (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                fontWeight: "bold",
+                color: "#333",
+                fontSize: "15px",
+              }}
+            >
+              <b>已知谣言相似度得分</b>
+            </div>
+          ),
+          children: data["max_score"],
+        },
+        {
+          key: "3",
+          label: (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                fontWeight: "bold",
+                color: "#333",
+                fontSize: "15px",
+              }}
+            >
+              <b>结论</b>
+            </div>
+          ),
+          children: data["conclusion"] === 0 ? "非谣言" : "谣言",
+        },
+      ];
+      setDesItem(updatedDesItem);
       setAnalysis(data["analysis"]);
       setData(data["optionList"]);
     } catch (error) {
@@ -254,7 +338,7 @@ export const TextSearch = () => {
             <Row style={{ marginBottom: 20 }}>
               <Col span={24}>
                 <Card hoverable title="综合分析">
-                <Descriptions layout="vertical" items={desItem} />
+                  <Descriptions layout="vertical" items={desItem} />
                 </Card>
               </Col>
             </Row>
