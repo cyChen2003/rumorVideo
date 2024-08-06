@@ -6,7 +6,7 @@ import type { SearchProps } from "antd/es/input/Search";
 import { Pie,Column } from "@ant-design/plots";
 import ReactECharts from 'echarts-for-react';
 import * as echarts from 'echarts/core';
-
+import axios from "axios";
 
 const { Search } = Input;
 
@@ -55,52 +55,21 @@ const footerStyle: React.CSSProperties = {
 };
 
 
-interface ChartData {
-  name: string;
+
+interface EmotionDataItem {
   value: number;
+  name: string;
+  color: string;
 }
-const chartData = [
-  { name: "fear", value: 4 },
-  { name: "trust", value: 12 },
-  { name: "negative", value: 30 },
-  { name: "positive", value: 12 }
-];
 
-const DemoPie = () => {
-  const config = {
-    data:chartData,
-    angleField: 'value',
-    colorField: 'name',
-    legend: false,
-    innerRadius: 0.4,
-    
-    labels: [
-      { text: 'name', style: { fontSize: 12, fontWeight: 'bold' } },
-      {
-        text: (d: ChartData) => d.value, // Display the value directly
-        style: {
-          fontSize: 12,
-          dy: 12,
-        },
-      },
-    ],
-    style: {
-      stroke: '#fff',
-      inset: 1,
-      radius: 10,
-    },
-    scale: {
-      color: {
-        palette: 'spectral',
-        offset: (t: any) => t * 0.8 + 0.1,
-      },
-    },
-  };
-  return <Pie {...config} />;
-};
+interface EmotionPieChartProps {
+  emotionData: EmotionDataItem[];
+}
+
+const EmotionPieChart: React.FC<EmotionPieChartProps> = ({ emotionData }) => {
+  // 根据 emotionData 生成图表数据
 
 
-const EmotionPieChart = () => {
   const option = {
     tooltip: {
       trigger: 'item'
@@ -108,11 +77,11 @@ const EmotionPieChart = () => {
     legend: {
       top: 'bottom',
       left: 'center',
-      padding:[0,10],
+      padding: [0, 10],
       textStyle: {
-        fontFamily: 'Arial, sans-serif', // 自定义字体
-        fontSize: 12, // 字体大小
-        fontWeight: 'bold' // 字体粗细
+        fontFamily: 'Arial, sans-serif',
+        fontSize: 12,
+        fontWeight: 'bold'
       }
     },
     series: [
@@ -127,7 +96,7 @@ const EmotionPieChart = () => {
           borderWidth: 4
         },
         label: {
-          position: 'outside', 
+          position: 'outside',
           formatter: '{b}: {d}%',
           fontFamily: 'Arial, sans-serif',
           fontSize: 12,
@@ -137,24 +106,15 @@ const EmotionPieChart = () => {
         emphasis: {
           label: {
             show: true,
-            fontSize: 16, // 加大字体
-            fontWeight: 'bold', // 加粗字体
-            color: '#000' // 字体颜色
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: '#000'
           }
         },
         labelLine: {
           show: true
         },
-        data: [
-          { value: 13, name: '愤怒', itemStyle: { color: '#D32F2F' } }, // 调整后的红色
-          { value: 23, name: '恐惧', itemStyle: { color: '#303F9F' } }, // 调整后的深蓝
-          { value: 15, name: '期待', itemStyle: { color: '#FFA726' } }, // 调整后的橙色
-          { value: 20, name: '信任', itemStyle: { color: '#29B6F6' } }, // 调整后的浅蓝
-          { value: 10, name: '惊讶', itemStyle: { color: '#FFEB3B' } }, // 调整后的亮黄
-          { value: 11, name: '悲伤', itemStyle: { color: '#1976D2' } }, // 调整后的忧郁蓝
-          { value: 4, name: '快乐', itemStyle: { color: '#EC407A' } }, // 调整后的热粉
-          { value: 8, name: '厌恶', itemStyle: { color: '#388E3C' } } // 调整后的墨绿
-        ]
+        data: emotionData
       }
     ]
   };
@@ -163,25 +123,18 @@ const EmotionPieChart = () => {
 };
 
 
+
 const { Title, Text } = Typography;
 
 
+interface CommentData {
+  comment: string;
+  likes: number;
+  emotion: string;
+}
 
-const commentsData = [
-  { comment: "专家没办法了，高手在民间[感谢][感谢]", likes: 19, emotion: "信任" },
-  { comment: "说的太好了，我得给你点个赞", likes: 2, emotion: "快乐" },
-  { comment: "我是自己治的。随便吃了点药就好了[捂脸]", likes: 2, emotion: "惊讶" },
-  { comment: "不是人家治不了，根本就不想让你好", likes: 10, emotion: "愤怒" },
-  { comment: "那你说那些在家呆着没吃药没打针的是谁治好的呢？[捂脸][捂脸][捂脸]", likes: 2, emotion: "怀疑" },
-  { comment: "终于找到了有效的方法，太开心了！", likes: 8, emotion: "快乐" },
-  { comment: "这种情况真的是太可怕了，希望尽快解决", likes: 25, emotion: "恐惧" },
-  { comment: "感谢医生们的努力和付出", likes: 12, emotion: "信任" },
-  { comment: "真的是无药可救了，这些人", likes: 13, emotion: "愤怒" },
-  { comment: "为什么会这样，真是让人难过", likes: 11, emotion: "悲伤" }
-];
-
-const CommentTable = () => {
-  const sortedComments = commentsData.sort((a, b) => b.likes - a.likes);
+const CommentTable = ({ data }: { data: CommentData[] }) => {
+  const sortedComments = data.sort((a, b) => b.likes - a.likes);
 
   const columns = [
     {
@@ -308,18 +261,19 @@ const MyChart: React.FC<MyChartProps> = ({ polarityScore }) => {
   return <ReactECharts option={option} style={{ height: 180 }} />;
 };
 
-const ResultsAnalysis = () => {
-  const newsTitle = "在西安高陵，你发现了吗？专家都治不了的新冠，最终都被，各村的小诊所给治了";
-  const polarityScore = -0.05681818181818182; // 介于-1到1之间
-  const isFakeNews = true;
+interface ResultsAnalysisProps {
+  newsTitle: string;
+  polarityScore: number;
+  isFakeNews: boolean;
+}
 
+const ResultsAnalysis: React.FC<ResultsAnalysisProps> = ({ newsTitle, polarityScore, isFakeNews }) => {
   return (
     <Card hoverable title="结果分析" bordered={true}>
-    <p><b>新闻标题：</b>{newsTitle}</p>
-    {/* <p><b>标题极性值：</b><Text style={{color: polarityScore >= 0 ?'red' : 'blue' }}>{polarityScore}</Text></p> */}
-    <MyChart polarityScore={polarityScore} />
-    <p><b>是否为谣言：</b><Text style={{color:isFakeNews ?  'blue' : 'red'}}>{isFakeNews ? '是' : '否'}</Text></p>
-  </Card>
+      <p><b>新闻标题：</b>{newsTitle}</p>
+      <MyChart polarityScore={polarityScore} />
+      <p><b>是否为谣言：</b><Text style={{ color: isFakeNews ? 'blue' : 'red' }}>{isFakeNews ? '是' : '否'}</Text></p>
+    </Card>
   );
 };
 
@@ -328,19 +282,6 @@ export const CommentsAnalysis = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [visible, setVisible] = useState(false);
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) => {
-    //变成loading状态
-    console.log(info?.source, value);
-    setClickSearch(true);
-    setTimeout(() => {
-      setVisible(true);
-      setClickSearch(false);
-    }, 2000);
-    messageApi.open({
-      type: "success",
-      content: "搜索成功",
-    });
-  };
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
   const [isSend, setSendTo] = useState(false);
@@ -364,6 +305,51 @@ export const CommentsAnalysis = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const items = steps.map((item) => ({ key: item.title, title: item.title }));
+  const [commentsData, setCommentsData] = useState<CommentData[]>([]);
+  const [emotionData, setEmotionData] = useState([]);
+  const [newsTitle, setNewsTitle] = useState("");
+  const [polarityScore, setPolarityScore] = useState(0);
+  const [isFakeNews, setIsFakeNews] = useState(false);
+  const [video_id, setVideoId] = useState('');
+  
+  const onSearch: SearchProps["onSearch"] = async (value, _e, info) => {
+    setClickSearch(true);
+    try {
+      const response = await axios.post('http://1.92.98.204:5000/comments', { url: value });
+      const data = response.data;
+      if (Array.isArray(data.comments)) {
+        setCommentsData(data.comments);  // 这里是一个数组
+        setVisible(true);
+        messageApi.open({
+          type: "success",
+          content: "搜索成功",
+        });
+      } else {
+        throw new Error("返回的数据格式不正确");
+      }
+      // 检查并处理情感数据
+      if (Array.isArray(data.emotionData)) {
+        setEmotionData(data.emotionData);  // 这里是情感数据的数组
+      } else {
+        throw new Error("返回的情感数据格式不正确");
+      }
+      // 处理新闻标题、情感分数和假新闻标识
+      setNewsTitle(data.newsTitle);
+      setPolarityScore(data.polarityScore);
+      setIsFakeNews(data.isFakeNews);
+      setVideoId(data.video_id);
+        // 处理视频ID和更新视频源
+
+    } catch (error) {
+      console.error("Failed to fetch comments data", error);
+      messageApi.open({
+        type: "error",
+        content: "搜索失败，请稍后再试",
+      });
+    }
+    setClickSearch(false);
+  };
+  
   return (
     <>
       <Steps current={current} items={items} />
@@ -394,7 +380,7 @@ export const CommentsAnalysis = () => {
                       controls
                       hidden={!visible}
                     >
-                      <source src="7186582738806328628.mp4" type="video/mp4" />
+                      <source src={"http://1.92.98.204:5000/download/"+video_id+".mp4"} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                   </Card>
@@ -416,17 +402,20 @@ export const CommentsAnalysis = () => {
           <Col span={13}>
               {/* <Card hoverable title="评论情感分布"><DemoPie /></Card> */}
               <Card hoverable title="评论情感分布">
-              <EmotionPieChart />
+              <EmotionPieChart  emotionData={emotionData} />
               </Card>
             </Col>
             <Col span={11}>
-            <ResultsAnalysis />
+            <ResultsAnalysis  
+            newsTitle={newsTitle}
+            polarityScore={polarityScore}
+            isFakeNews={isFakeNews}/>
             </Col>
 
 
             <Col span={24} >
             <Card hoverable title="点赞数排名前10的评论">
-              <CommentTable />
+            <CommentTable data={commentsData} />
             </Card>
             
               <Button
