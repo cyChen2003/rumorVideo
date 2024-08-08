@@ -292,15 +292,6 @@ export const CommentsAnalysis = () => {
   const prev = () => {
     setCurrent(current - 1);
   };
-
-  const sendTo = () => {
-    setSendTo(true);
-    setTimeout(() => {
-      message.success("解析成功，已生成报告！");
-      setSendTo(false);
-      setCurrent(current + 1);
-    }, 2000);
-  };
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -311,11 +302,18 @@ export const CommentsAnalysis = () => {
   const [polarityScore, setPolarityScore] = useState(0);
   const [isFakeNews, setIsFakeNews] = useState(false);
   const [videoid, setVideoId] = useState('');
+
+  useEffect(() => {
+    if (current === 1 && !isSend) { // 确保在步骤 2 时调用
+      sendTo();
+    }
+  }, [current]);
   
-  const onSearch: SearchProps["onSearch"] = async (value, _e, info) => {
-    setClickSearch(true);
+
+  const sendTo = async () => {
+    setSendTo(true);
     try {
-      const response = await axios.post('http://1.92.98.204:5000/comments', { url: value });
+      const response = await axios.post('http://1.92.98.204:5000/comments', { videoid });
       const data = response.data;
       if (Array.isArray(data.comments)) {
         setCommentsData(data.comments);  // 这里是一个数组
@@ -337,18 +335,46 @@ export const CommentsAnalysis = () => {
       setNewsTitle(data.newsTitle);
       setPolarityScore(data.polarityScore);
       setIsFakeNews(data.isFakeNews);
-      setVideoId(data.videoid);
-        // 处理视频ID和更新视频源
-
     } catch (error) {
       console.error("Failed to fetch comments data", error);
       messageApi.open({
         type: "error",
-        content: "搜索失败，请稍后再试",
+        content: "解析失败，请稍后再试",
       });
     }
-    setClickSearch(false);
+    setSendTo(false);
   };
+
+  const handleNext = () => {
+    if (current === 1) {
+      if (!isSend) {
+        next();
+      } else {
+        message.warning("请等待解析完成！");
+      }
+    } else {
+      next();
+    }
+  };
+
+
+  
+const onSearch: SearchProps["onSearch"] = async (value) => {
+  setClickSearch(true);
+  try {
+    const response = await axios.post('http://1.92.98.204:5000/get_videoid', { url: value });
+    const data = response.data;
+    setVideoId(data.videoid);
+    setVisible(true); // 确保在获取到视频ID后显示视频
+  } catch (error) {
+    console.error("Failed to fetch video id", error);
+    messageApi.open({
+      type: "error",
+      content: "搜索失败，请稍后再试",
+    });
+  }
+  setClickSearch(false);
+};
   
   return (
     <>
@@ -373,17 +399,22 @@ export const CommentsAnalysis = () => {
                     enterButton
                     loading={clickSearch}
                   />
+                  <Card hoverable hidden={!visible}>
                     <video
                       width="100%"
                       height="auto"
                       controls
                       hidden={!visible}
                     >
-                      <source src={`http://1.92.98.204:5000/download/${videoid}`} type="video/mp4" />
-                      Your browser does not support the video tag.
+                      {visible && (
+                        <source 
+                          src={`http://1.92.98.204:5000/download/${videoid}`} type="video/mp4" 
+                        />
+                      )}
                     </video>
 
-                  <Button type="primary" onClick={() => next()}>
+                    </Card>
+                  <Button type="primary" onClick={handleNext}>
                     下一步
                   </Button>
                 </Space>
@@ -392,7 +423,7 @@ export const CommentsAnalysis = () => {
           </Row>
         )}
         {current === 1 && (
-          <Button type="primary" onClick={() => sendTo()} loading={isSend}>
+          <Button type="primary" onClick={handleNext} loading={isSend}>
             下一步
           </Button>
         )}
