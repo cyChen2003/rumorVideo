@@ -10,18 +10,28 @@ export const EChartsCalendarComponent: React.FC = () => {
 
             const cellSize = [75, 75];
             const pieRadius = 30;
-
+            const list = [
+                [8,3,2,1],
+                [5,7,3,1],
+                [2,1,2,0],
+            ]
             const getVirtualData = function() {
-                const date = +echarts.time.parse('2024-07-01');
-                const end = +echarts.time.parse('2024-08-01');
+                const date = +echarts.time.parse('2024-08-01');
+                const end = +echarts.time.parse('2024-08-05');
                 const dayTime = 3600 * 24 * 1000;
                 const data = [];
+                let idx = 0
                 for (let time = date; time < end; time += dayTime) {
                     data.push([
                         echarts.time.format(time, '{yyyy}-{MM}-{dd}', false),
-                        Math.floor(Math.random() * 10000)
+                        // Math.floor(Math.random() * 10000)
+                        list[idx++ % 3]
                     ]);
                 }
+                // data = [
+                //     [echarts.time.format(date, '{yyyy}-{MM}-{dd}', false), [10, 10]],
+                // ]
+                console.log(data);
                 return data;
             }
 
@@ -38,10 +48,10 @@ export const EChartsCalendarComponent: React.FC = () => {
                         position: 'inside'
                     },
                     data: [
-                        { name: '已知谣言过滤', value: Math.round(Math.random() * 24) },
-                        { name: '多模态谣言检测', value: Math.round(Math.random() * 24) },
-                        { name: 'deepfake检测', value: Math.round(Math.random() * 24) },
-                        { name: '评论语义分析检测', value: Math.round(Math.random() * 24) },
+                        { name: '已知谣言过滤', value: item[1][0] },
+                        { name: '多模态谣言检测', value: item[1][1] },
+                        { name: 'deepfake检测', value:  item[1][2] },
+                        { name: '评论语义分析检测', value: item[1][3] }
                     ]
                 };
             });
@@ -69,7 +79,7 @@ export const EChartsCalendarComponent: React.FC = () => {
                     monthLabel: {
                         show: false
                     },
-                    range: ['2024-07']
+                    range: ['2024-08']
                 },
                 series: [
                     {

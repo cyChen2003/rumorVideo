@@ -111,8 +111,8 @@ const data: DataType[] = [
     content: '1303',
   },
 
-
 ];
+
 interface PieDataType {
   type: string;
   value: number;
@@ -213,6 +213,21 @@ export const CrossTransformer = () => {
     });
 
   };
+  const sendMessage = async () => {
+    try {
+      const response = await axios.get("http://1.92.98.204:5000//sendToDB/" + apiData["info_data"]["aweme_id"] + "/1");
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      else {
+        message.success("发送成功！");
+      }
+    }
+    catch (error) {
+      messageApi.error(`请求失败：${error}`);
+    }
+
+  }
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
   const [isSend, setSendTo] = useState(false);
@@ -324,9 +339,9 @@ export const CrossTransformer = () => {
               <TestPie pieData={pieData}/>
               <Button
                 type="primary"
-                onClick={() => message.success("解析成功，已生成报告！")}
+                onClick={() => sendMessage()}
               >
-                Done
+                提交报告
               </Button>
               <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
                 上一步
