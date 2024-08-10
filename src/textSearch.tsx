@@ -90,6 +90,7 @@ export const TextSearch = () => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const [inputType, setInputType] = useState<"URL" | "TEXT">("URL");
+  const [currentID, setCurrentid] = useState("");
 
   const handleInputTypeChange = (e: any) => {
     setInputType(e.target.value);
@@ -111,6 +112,7 @@ export const TextSearch = () => {
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
   const [isSend, setSendTo] = useState(false);
+  const [isuploading,setuploading] = useState(false);
   const [data, setData] = useState([
     "天津塘沽发生大爆炸事故，引发伤亡人员报道，希望伤亡人数不再增加，消防战士平安归来，追责事故真相。向消防英雄致敬。",
     "天津塘沽发生大爆炸事件，官方报道死亡人数为50+,网友质疑公关处理和对消防战士亡魂的尊重。",
@@ -182,6 +184,52 @@ export const TextSearch = () => {
   const prev = () => {
     setCurrent(current - 1);
   };
+  const constructURL = (id:string) => {
+    // 使用模板字面量拼接字符串
+    return `http://1.92.98.204:5000/sendToDB/${id}/3`;
+  };
+  const sendToDB = async () => {
+    setuploading(true);
+    if (!currentID) {
+      message.error("非url检索！");
+      setuploading(false);
+      return;
+    }
+    const url = constructURL(currentID)
+    try {
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.data;
+      if (!data){
+        message.error("提交报告失败！")
+        setuploading(false);
+        return;
+      }
+      else{
+        message.success("提交报告成功！");
+        setuploading(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const extractModelValue = (url: string) => {
+    const regex = /modal_id=(\d+)/;
+    const match = url.match(regex);
+    if (match && match[1]) {
+      return match[1];
+    }
+    return "";
+  };
 
   const sendTo = async () => {
     setSendTo(true);
@@ -190,6 +238,10 @@ export const TextSearch = () => {
       message.error("请输入内容！");
       setSendTo(false);
       return;
+    }
+    if (inputType === "URL") {
+      const idvalue = extractModelValue(inputContent);
+      setCurrentid(idvalue);
     }
     const payload =
       inputType === "URL"
@@ -391,8 +443,8 @@ export const TextSearch = () => {
             <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
               上一步
             </Button>
-            <Button type="primary" onClick={() => prev()}>
-              完成
+            <Button type="primary" onClick={() => sendToDB()} loading={isuploading}>
+              提交报告
             </Button>
           </Space>
         )}

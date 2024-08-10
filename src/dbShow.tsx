@@ -85,15 +85,15 @@ export const DbShow = () => {
   const [value, setValue] = useState("已知谣言");
   const [data, setData] = useState([
     {
-      key: "1",
-      _id: "1",
-      content: "三岁女孩被拐！现场监控曝光！",
-      imageUrl: "https://www.douyin.com/discover?modal_id=7370929647812463883",
-      postTime: "2024-05-01 10:00",
-      retweetCount: 58,
-      commentCount: 24,
-      likeCount: 112,
-      reportReason: "已知谣言",
+      key: "",
+      _id: "",
+      content: "",
+      imageUrl: "",
+      postTime: "",
+      retweetCount: 0,
+      commentCount: 0,
+      likeCount: 0,
+      reportReason: "",
     },
   ]);
   const [current, setCurrent] = useState(0);
@@ -130,9 +130,11 @@ export const DbShow = () => {
         _id: item._id,
         content: item.title,
         imageUrl: `https://www.douyin.com/discover?modal_id=${item.video_id}`,
-        postTime: new Date(item.publish_time_norm).toLocaleString("zh-CN", {
-          hour12: false,
-        }),
+        postTime: item.publish_time_norm 
+        ? new Date(item.publish_time_norm).toLocaleString("zh-CN", {
+            hour12: false,
+        })
+        : "",
         // postTime: "123123",
         retweetCount: item.count_star, // 将字符串转换为整数
         commentCount: item.count_comment,
