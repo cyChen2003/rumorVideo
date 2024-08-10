@@ -20,6 +20,9 @@ import { CommentDataViewer } from "./CommentsDataViewer";
 import { RelationshipGraph } from "./relationship";
 import { SystemShow } from "./SystemShow";
 import { ModalDatabase} from "./ModalDatabase";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import { User } from "./User";
+import  LoginDemo  from "./Logindemo"; //
 
 const { Header, Content, Footer, Sider } = Layout;
 const headerStyle: React.CSSProperties = {

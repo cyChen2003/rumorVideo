@@ -2,14 +2,28 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import LoginDemo from "./Logindemo";
 import reportWebVitals from './reportWebVitals';
+import User from "./User";
 
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+function AppRouter() {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<LoginDemo/>}/>
+                <Route path="/Admin" element={<App/>}/>
+                <Route path="/User" element={<User />} />
+            </Routes>
+        </Router>
+    );
+}
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <AppRouter />
   </React.StrictMode>
 );
 
