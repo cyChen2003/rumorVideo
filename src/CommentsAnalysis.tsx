@@ -302,7 +302,21 @@ export const CommentsAnalysis = () => {
   const [polarityScore, setPolarityScore] = useState(0);
   const [isFakeNews, setIsFakeNews] = useState(false);
   const [videoid, setVideoId] = useState('');
+  const sendMessage = async () => {
+    try {
+      const response = await axios.get("http://1.92.98.204:5000//sendToDB/" + videoid + "/2");
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      else {
+        message.success("发送成功！");
+      }
+    }
+    catch (error) {
+      messageApi.error(`请求失败：${error}`);
+    }
 
+  }
   useEffect(() => {
     if (current === 1 && !isSend) { // 确保在步骤 2 时调用
       sendTo();
@@ -450,9 +464,9 @@ const onSearch: SearchProps["onSearch"] = async (value) => {
             
               <Button
                 type="primary"
-                onClick={() => message.success("解析成功，已生成报告！")}
+                onClick={() => sendMessage()}
               >
-                Done
+                提交
               </Button>
               <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
                 上一步
